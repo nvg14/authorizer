@@ -1,0 +1,18 @@
+{
+    "rule:amgr000001": [
+        "put::v1::channels::abc::captions",
+        "get::v1::channels",
+        "post::v1::channels",
+        "put::v1::channels",
+        "patch::v1::channels",
+        "delete::v1::channels"
+    ],
+    "rule:admin": [
+        "put::v1::channels::abc::captions",
+        "get::v1::channels",
+        "post::v1::channels",
+        "put::v1::channels",
+        "patch::v1::channels",
+        "delete::v1::channels"
+    ]
+}
