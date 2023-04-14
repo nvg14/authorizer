@@ -70,18 +70,23 @@ class S(BaseHTTPRequestHandler):
         operation = operation_prefix.strip("/")
         logging.info(operation)
         if operation not in rules["operations"]:
+            logging.info(9)
             return False
-        
+        logging.info(10)
         operation_scope = rules["operations"][operation]
+        logging.info(operation_scope)
         for pattern, scope in operation_scope.items():
+            logging.info(pattern)
             temp = re.compile(pattern)
+            logging.info(temp)
             if temp.match(url.path) != None:
+                logging.info(11)
                 if self.headers.get("x-forwarded-method") not in scope["actions"]:
                     return False
-        
+                logging.info(12)
                 if "conditions" not in scope:
                     return True
-                
+                logging.info(13)
                 logging.info("Checking Headers")
                 if "headers" in scope["conditions"]:
                     for header, value in scope["conditions"]["headers"].items():
