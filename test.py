@@ -21,14 +21,15 @@ with open('scope_to_rules_v2.json') as json_file:
                 scope_data = item["operations"][operation][path_pattern]
                 temp = "/" + operation + path_pattern
                 temp = temp.replace("/", "\/")
-                resources = list(item["operations"][operation][path_pattern]["resources"].keys())
-                for resource in resources:
-                    temp = temp.replace(":" + resource, str(item["operations"][operation][path_pattern]["resources"][resource]))
+                if "resources" in item["operations"][operation][path_pattern]:
+                    resources = list(item["operations"][operation][path_pattern]["resources"].keys())
+                    for resource in resources:
+                        temp = temp.replace(":" + resource, str(item["operations"][operation][path_pattern]["resources"][resource]))
                 authorization_rules[item["id"]]["operations"][operation][temp] = scope_data
                 authorization_rules[item["id"]]["operations"][operation].pop(path_pattern)
 
 
-PORT = 8000
+PORT = 8080
 Handler = http.server.SimpleHTTPRequestHandler
 PREFIX = 'Bearer '
 
@@ -143,7 +144,7 @@ class S(BaseHTTPRequestHandler):
         return json.loads(my_json)
         # return json.dumps(data, indent=4, sort_keys=True)
 
-    def do_GET(self):
+    def authorizer(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         authz = self.headers.get("Authorization")
         
@@ -175,17 +176,12 @@ class S(BaseHTTPRequestHandler):
         
         self._set_denied_response()
         return
-
-
+    
+    def do_GET(self):
+        self.authorizer()
 
     def do_POST(self):
-        content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-        post_data = self.rfile.read(content_length) # <--- Gets the data itself
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
-                str(self.path), str(self.headers), post_data.decode('utf-8'))
-
-        self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
+        self.authorizer()
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)

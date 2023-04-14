@@ -1,0 +1,40 @@
+[
+    {
+        "id": "rule:admin",
+        "name": "Operator",
+        "operations": {
+            "cloudport": {
+                "/v1/api/accounts/:account_id/feeds/:feed_id": {
+                    "effect": "allow",
+                    "actions" : ["GET","PUT"],
+                    "resources": {
+                        "account_id": ["1","2","3"],
+                        "feed_id": ["AMG0001C1","AMG0001C2"]
+                    },
+                    "conditions" : {
+                        "headers" : {
+                            "x-identifier-id" : ["12", "000"]
+                        },
+                        "query" : {
+                            "id" : ["io", "pp"]
+                        },
+                        "body" : {
+                            "a.b" : ["d", "e"]
+                        }
+                    }
+                }
+            },
+            "compass": {
+                "/secrets": {
+                    "effect": "allow",
+                    "actions": ["POST"],
+                    "conditions": {
+                        "headers": {
+                            "x-account-id": ["login-test-1"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+]
