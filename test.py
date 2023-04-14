@@ -58,17 +58,17 @@ class S(BaseHTTPRequestHandler):
         rules = authorization_rules[permission]
         operation_prefix = self.headers.get("x-forwarded-prefix")
         path = operation_prefix + self.headers.get("x-forwarded-uri")
-        print(path)
+        logging.info(path)
         url = urlparse(path)
-        print(url)
+        logging.info(url)
         # operation = url.path.split("/")[1]
         
-        print(operation_prefix)
+        logging.info(operation_prefix)
         if operation_prefix == None:
             return False
 
         operation = operation_prefix.strip("/")
-        print(operation)
+        logging.info(operation)
         if operation not in rules["operations"]:
             return False
         
@@ -76,13 +76,13 @@ class S(BaseHTTPRequestHandler):
         for pattern, scope in operation_scope.items():
             temp = re.compile(pattern)
             if temp.match(url.path) != None:
-                if self.command not in scope["actions"]:
+                if self.headers.get("x-forwarded-method") not in scope["actions"]:
                     return False
         
                 if "conditions" not in scope:
                     return True
                 
-                print("Checking Headers")
+                logging.info("Checking Headers")
                 if "headers" in scope["conditions"]:
                     for header, value in scope["conditions"]["headers"].items():
                         match_count = 0
@@ -100,7 +100,7 @@ class S(BaseHTTPRequestHandler):
                         # if len(set(request_header_values) - set(value)) != 0:
                         #     return False
                 
-                print("Checking Query")
+                logging.info("Checking Query")
                 if "query" in scope["conditions"]:
                     for query, values in scope["conditions"]["query"].items():
                         match_count = 0
@@ -116,7 +116,7 @@ class S(BaseHTTPRequestHandler):
                         if match_count == 0:
                             return False
                 
-                print("Checking Body")
+                logging.info("Checking Body")
                 if "body" in scope["conditions"]:
                     for key, values in scope["conditions"]["body"].items():
                         content_length = int(self.headers.get("Content-Length"))
@@ -148,23 +148,23 @@ class S(BaseHTTPRequestHandler):
     def authorizer(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         authz = self.headers.get("Authorization")
-        print(1)
+        logging.info(1)
         if authz == None:
-            print(2)
+            logging.info(2)
             self._set_denied_response()
             return
-        print(3)
+        logging.info(3)
         decoded_data = jwt.decode(get_token(authz), "RS256", algorithms=["HS256"], options={"verify_signature": False})
         if "permissions" not in decoded_data:
-            print(4)
+            logging.info(4)
             self._set_denied_response()
             return
-        print(5)
+        logging.info(5)
         permissions = decoded_data["permissions"]
         for permission in permissions:
-            print(6)
+            logging.info(6)
             if permission not in authorization_rules:
-                print(7)
+                logging.info(7)
                 continue
             if not self.check_scope(permission):
                 
