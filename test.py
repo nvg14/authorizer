@@ -148,23 +148,23 @@ class S(BaseHTTPRequestHandler):
     def authorizer(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         authz = self.headers.get("Authorization")
-        
+        print(1)
         if authz == None:
-            
+            print(2)
             self._set_denied_response()
             return
-        
+        print(3)
         decoded_data = jwt.decode(get_token(authz), "RS256", algorithms=["HS256"], options={"verify_signature": False})
         if "permissions" not in decoded_data:
-            
+            print(4)
             self._set_denied_response()
             return
-        
+        print(5)
         permissions = decoded_data["permissions"]
         for permission in permissions:
-            
+            print(6)
             if permission not in authorization_rules:
-                
+                print(7)
                 continue
             if not self.check_scope(permission):
                 
