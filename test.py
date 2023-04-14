@@ -56,14 +56,15 @@ class S(BaseHTTPRequestHandler):
     def check_scope(self, permission):
         
         rules = authorization_rules[permission]
-        path = self.path
+        path = self.headers.get("x-forwarded-uri")
         url = urlparse(path)
         print(url)
-        operation = url.path.split("/")[1]
-        # operation = self.headers.get("x-operation-id")
+        # operation = url.path.split("/")[1]
+        operation = self.headers.get("x-forwarded-prefix")
         if operation == None:
             return False
 
+        operation = operation.strip("/")
         if operation not in rules["operations"]:
             return False
         
