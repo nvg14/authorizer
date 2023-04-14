@@ -1,7 +1,7 @@
 [
     {
-        "id": "rule:admin",
-        "name": "Operator",
+        "id": "scope:admin",
+        "name": "Admin",
         "operations": {
             "cloudport": {
                 "/v1/api/accounts/:account_id/feeds/:feed_id": {
