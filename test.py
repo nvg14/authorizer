@@ -78,7 +78,9 @@ class S(BaseHTTPRequestHandler):
         for pattern, scope in operation_scope.items():
             logging.info(pattern)
             temp = re.compile(pattern)
+            logging.info("---")
             logging.info(temp)
+            logging.info(url.path)
             if temp.match(url.path) != None:
                 logging.info(11)
                 if self.headers.get("x-forwarded-method") not in scope["actions"]:
