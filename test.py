@@ -166,8 +166,10 @@ class S(BaseHTTPRequestHandler):
             return
         logging.info(5)
         permissions = decoded_data["permissions"]
+        logging.info(permissions)
         for permission in permissions:
             logging.info(6)
+            logging.info(permission)
             if permission not in authorization_rules:
                 logging.info(7)
                 continue
