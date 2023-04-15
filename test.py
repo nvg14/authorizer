@@ -53,26 +53,26 @@ class S(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-    def check_scope(self, permission):
+    def check_scope(self, permission, rules, url):
         
-        rules = authorization_rules[permission]
-        operation_prefix = self.headers.get("x-forwarded-prefix")
-        path = operation_prefix + self.headers.get("x-forwarded-uri")
-        logging.info(path)
-        url = urlparse(path)
-        logging.info(url)
-        # operation = url.path.split("/")[1]
+        # rules = authorization_rules[permission]
+        # operation_prefix = self.headers.get("x-forwarded-prefix")
+        # path = operation_prefix + self.headers.get("x-forwarded-uri")
+        # logging.info(path)
+        # url = urlparse(path)
+        # logging.info(url)
+        # # operation = url.path.split("/")[1]
         
-        logging.info(operation_prefix)
-        if operation_prefix == None:
-            return False
+        # logging.info(operation_prefix)
+        # if operation_prefix == None:
+        #     return False
 
-        operation = operation_prefix.strip("/")
-        logging.info(operation)
-        if operation not in rules["operations"]:
-            logging.info(9)
-            return False
-        logging.info(10)
+        # operation = operation_prefix.strip("/")
+        # logging.info(operation)
+        # if operation not in rules["operations"]:
+        #     logging.info(9)
+        #     return False
+        # logging.info(10)
         operation_scope = rules["operations"][operation]
         logging.info(operation_scope)
         for pattern, scope in operation_scope.items():
@@ -175,7 +175,25 @@ class S(BaseHTTPRequestHandler):
             if permission not in authorization_rules:
                 logging.info(7)
                 continue
-            if not self.check_scope(permission):
+
+            rules = authorization_rules[permission]
+            operation_prefix = self.headers.get("x-forwarded-prefix")
+            path = operation_prefix + self.headers.get("x-forwarded-uri")
+            logging.info(path)
+            url = urlparse(path)
+            logging.info(url)
+            # operation = url.path.split("/")[1]
+            
+            logging.info(operation_prefix)
+            if operation_prefix == None:
+                return False
+
+            operation = operation_prefix.strip("/")
+            logging.info(operation)
+            if operation not in rules["operations"]:
+                continue
+            
+            if not self.check_scope(permission, rules, url):
                 
                 self._set_denied_response()
                 return
@@ -191,6 +209,18 @@ class S(BaseHTTPRequestHandler):
         self.authorizer()
 
     def do_POST(self):
+        self.authorizer()
+    
+    def do_PUT(self):
+        self.authorizer()
+    
+    def do_DELETE(self):
+        self.authorizer()
+    
+    def do_HEAD(self):
+        self.authorizer()
+    
+    def do_PATCH(self):
         self.authorizer()
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):

@@ -1,6 +1,6 @@
 [
     {
-        "id": "scope:admin",
+        "id": "rule:admin",
         "name": "Admin",
         "operations": {
             "cloudport": {
@@ -23,11 +23,17 @@
                         }
                     }
                 }
-            },
+            }
+        }
+    },
+    {
+        "id": "scope:admin",
+        "name": "Admin",
+        "operations": {
             "compass": {
-                "/secrets": {
+                "/*": {
                     "effect": "allow",
-                    "actions": ["POST"],
+                    "actions": ["POST", "GET", "PUT", "PATCH", "DELETE", "HEAD"],
                     "conditions": {
                         "headers": {
                             "x-account-id": ["login-test-1"]
